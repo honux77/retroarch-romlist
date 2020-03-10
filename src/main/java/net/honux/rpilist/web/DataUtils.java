@@ -2,6 +2,7 @@ package net.honux.rpilist.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -20,10 +21,13 @@ import java.io.IOException;
 @Component
 public class DataUtils {
 
-    private final static String romPath ="D:\\retropie";
+    private final static String romPath = "D:\\retropie";
     private final static Logger logger = LoggerFactory.getLogger(DataUtils.class);
 
-    public static void readXmlIntoDB(GameType gameType) throws ParserConfigurationException, IOException, SAXException {
+    @Autowired
+    private GameRepository gameRepository;
+
+    public void readXmlIntoDB(GameType gameType) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(romPath + gameType.listFilename());
@@ -36,14 +40,14 @@ public class DataUtils {
 
         for (int i = 0; i < gameList.getLength(); i++) {
             Node node = gameList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE)
-            {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Game game = createGameFromNode(node);
+                gameRepository.save(game);
             }
         }
     }
 
-    private static Game createGameFromNode(Node gameNode)  {
+    private Game createGameFromNode(Node gameNode) {
         Element game = (Element) gameNode;
         Game newGame = new Game(
                 getElementTextStringFromGameNode(game, "path"),
@@ -56,17 +60,27 @@ public class DataUtils {
                 getElementTextStringFromGameNode(game, "publisher"),
                 getElementTextStringFromGameNode(game, "genre"),
                 getElementTextStringFromGameNode(game, "players"),
-                getElementTextStringFromGameNode(game, "playcount"),
+                getElementIntegerValueFromGameNode(game, "playcount"),
                 getElementTextStringFromGameNode(game, "lastplayed")
-                );
-        logger.debug("New Game: {}", newGame);
+        );
+        logger.debug("From XML: {}", newGame);
+
         return newGame;
     }
 
-    private static String getElementTextStringFromGameNode(Element game, String tagName) {
-         NodeList tag = game.getElementsByTagName(tagName);
-         if(tag == null) return "";
-         if (tag.item(0) == null) return "";
-         return tag.item(0).getTextContent();
+    private Integer getElementIntegerValueFromGameNode(Element game, String tagName) {
+        NodeList tag = game.getElementsByTagName(tagName);
+        if (tag == null) return 0;
+        if (tag.item(0) == null) return 0;
+        return Integer.parseInt(tag.item(0).getTextContent());
+    }
+
+    ;
+
+    private String getElementTextStringFromGameNode(Element game, String tagName) {
+        NodeList tag = game.getElementsByTagName(tagName);
+        if (tag == null) return "";
+        if (tag.item(0) == null) return "";
+        return tag.item(0).getTextContent();
     }
 }

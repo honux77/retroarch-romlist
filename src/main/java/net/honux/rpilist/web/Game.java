@@ -1,8 +1,12 @@
 package net.honux.rpilist.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
 
 public class Game {
+
+    @Id
+    private Long id;
 
     @JsonProperty
     private String path;
@@ -35,7 +39,7 @@ public class Game {
     private String players;
 
     @JsonProperty
-    private String playCount;
+    private Integer playCount;
 
     @JsonProperty
     private String lastPlayed;
@@ -43,7 +47,7 @@ public class Game {
 
     public Game(String path, String name, String description, String imagePath, String rating,
                 String releaseDate, String developer, String publisher, String genre, String players,
-                String playCount, String lastPlayed) {
+                Integer playCount, String lastPlayed) {
         this.path = path;
         this.name = name;
         this.description = description;
@@ -69,8 +73,8 @@ public class Game {
     }
 
     public String getShortDescription() {
-        if (description == null || description.equals("") || description.length() < 10) return "";
-        return description.substring(0, 10);
+        if (description == null || description.equals("") || description.length() < 16) return "";
+        return description.substring(0, 16) +"...";
     }
 
     @Override

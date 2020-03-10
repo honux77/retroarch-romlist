@@ -18,7 +18,8 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testCompile("org.assertj:assertj-core:3.11.1")
-
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jdbc', version: '2.2.5.RELEASE'
+	compile group: 'com.h2database', name: 'h2', version: '1.4.200'
 }
 
 test {
