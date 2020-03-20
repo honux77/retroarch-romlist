@@ -14,8 +14,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 
 @Component
@@ -33,7 +31,7 @@ public class DataUtils {
         Document document = builder.parse(romPath + gameType.listFilename());
 
         Element root = document.getDocumentElement();
-        logger.debug("root node name: {}", root.getNodeName());
+        //logger.debug("root node name: {}", root.getNodeName());
 
         //Get all employees
         NodeList gameList = document.getElementsByTagName("game");
@@ -63,7 +61,7 @@ public class DataUtils {
                 getElementIntegerValueFromGameNode(game, "playcount"),
                 getElementTextStringFromGameNode(game, "lastplayed")
         );
-        logger.debug("From XML: {}", newGame);
+        logger.trace("From XML: {}", newGame);
 
         return newGame;
     }
